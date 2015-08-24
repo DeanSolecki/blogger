@@ -1,0 +1,23 @@
+---
+name: new_post
+url: /admin/new_post
+controller: PostCtrl
+---
+
+<div ng-show="user.configName == 'admin'" class="grid-container">
+	<form ng-init="postForm = {}">
+		<label>
+			Title
+			<input type="text" ng-model="postForm.title">
+		</label>
+		<label>
+			Body
+			<textarea ng-model="postForm.body"></textarea>
+		</label>
+		<a class="button" href="#" ng-click="postForm.admin_id = user.id; submitPost()">Submit</a>
+	</form>
+</div>
+		
+<div ng-show="!(user.configName == 'admin')" class="grid-container">
+	<h3 style="color: red;">Access not permitted.</h3>
+</div>

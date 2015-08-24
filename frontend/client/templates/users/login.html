@@ -1,0 +1,19 @@
+---
+name: login
+url: /users/login
+controller: LoginCtrl
+---
+
+<div class="grid-container">
+	<form ng-init="loginForm = {}">
+		<label>
+			Email
+			<input type="text" ng-model="loginForm.email">
+		</label>
+		<label>
+			Password
+			<input type="password" ng-model="loginForm.password">
+		</label>
+		<a class="button" href="#!/" ng-click="LoginClick()">Login</a>
+	</form>
+</div>

@@ -1,0 +1,29 @@
+---
+name: home
+url: /
+controller: HomeCtrl
+---
+
+<div class="grid-container">
+	<h2>Blog Posts</h2>
+	<ul ng-repeat="post in data.posts" ng-init="newComment = {}">
+		<li>
+			<h4>{{post.title}}</h4>
+			<p>{{post.body}}</p>
+			<ul ng-repeat=" comment in post.comments">
+				<li>{{comment.body}} -- {{comment.commentable_id}} {{comment.commentable_type}}
+					<span ng-show="user.configName == 'admin' || (user.id == comment.commentable_id && user.configName == comment.commentable_type)">
+						<a href="#!/" ng-click="deleteComment(comment)">Delete</a>
+						<a href="#!/" ng-click="">Edit</a>
+					</span>
+				</li>
+			</ul>
+			<span ng-show="user.id">
+				<a href="#!" ng-click="showCommentBox()">Comment</a>
+			</span>
+			<textarea ng-model="newComment.body"></textarea>
+			<a class="button" href="#" ng-click="newComment.post_id = post.id; newComment.commentable_id = user.id; submitComment(newComment)">Comment</a>
+		</li>
+	</ul>
+	<p>{{ testBin }}</p>
+</div>

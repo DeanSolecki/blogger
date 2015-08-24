@@ -1,0 +1,23 @@
+---
+name: register
+url: /users/register
+controller: RegCtrl
+---
+
+<div class="grid-container">
+	<form ng-init="registrationForm = {}">
+		<label>
+			Email
+			<input type="text" ng-model="registrationForm.email">
+		</label>
+		<label>
+			Password
+			<input type="password" ng-model="registrationForm.password">
+		</label>
+		<label>
+			Password Confirmation
+			<input type="password" ng-model="registrationForm.password_confirmation">
+		</label>
+		<a class="button" href="#!/" ng-click="RegClick()">Register</a>
+	</form>
+</div>

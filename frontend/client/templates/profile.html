@@ -1,0 +1,23 @@
+---
+name: profile
+url: /profile
+controller: ProfileCtrl
+---
+
+<div class="grid-container">
+	<form>
+		<label>
+			Nickname
+			<input type="text" ng-model="profileForm.nickname">
+		</label>
+		<label>
+			First Name
+			<input type="text" ng-model="profileForm.first_name">
+		</label>
+		<label>
+			Last Name
+			<input type="text" ng-model="profileForm.last_name">
+		</label>
+		<a class="button" href="#!/" ng-click="updateProfile()">Update</a>
+	</form>
+</div>

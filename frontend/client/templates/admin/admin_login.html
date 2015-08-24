@@ -1,0 +1,19 @@
+---
+name: admin_login
+url: /admin/admin_login
+controller: AdminLoginCtrl
+---
+
+<div class="grid-container">
+	<form ng-init="adminLoginForm = {}">
+		<label>
+			Email
+			<input type="text" ng-model="adminLoginForm.email">
+		</label>
+		<label>
+			Password
+			<input type="password" ng-model="adminLoginForm.password">
+		</label>
+		<a class="button" href="#" ng-click="AdminLoginClick()">Login</a>
+	</form>
+</div>
