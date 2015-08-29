@@ -10,7 +10,7 @@ class ApplicationController < ActionController::API
 	protected
 
 	def configure_permitted_parameters
-		devise_parameter_sanitizer.for(:sign_up) {|u| u.permit(:profile_attributes => [:nickname, :first_name, :last_name])}
+		devise_parameter_sanitizer.for(:sign_up) {|u| u.permit(:profile)}
 	end
 
 	private
