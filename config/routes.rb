@@ -4,9 +4,7 @@ Rails.application.routes.draw do
 		resources :posts, except: [:new, :edit]
 		resources :profiles, except: [:new, :edit]
 
-		mount_devise_token_auth_for 'User', at: 'auth', controllers: {
-			registrations: 'overrides/registrations'
-		}
+		mount_devise_token_auth_for 'User', at: 'auth'
 
 		mount_devise_token_auth_for 'Admin', at: 'admin_auth', skip: [:omniauth_callbacks, :registrations]
 		as :admin do
