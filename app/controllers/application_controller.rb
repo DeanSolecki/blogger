@@ -1,9 +1,7 @@
 class ApplicationController < ActionController::API
 	before_action :set_default_response_format
-	before_action :configure_permitted_parameters, if: :devise_controller?
 
 	include DeviseTokenAuth::Concerns::SetUserByToken
-	include ActionController::MimeResponds
 	include ActionController::ImplicitRender
 	include ActionController::Serialization
 

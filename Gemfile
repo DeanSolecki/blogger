@@ -1,9 +1,10 @@
 source 'https://rubygems.org'
 
 
-gem 'rails', '4.1.8'
+gem 'rails', '4.2'
 
 gem 'rails-api'
+gem 'responders', '~>2.0'
 
 gem 'spring', :group => :development
 
@@ -11,7 +12,7 @@ gem 'spring', :group => :development
 gem 'pg'
 gem 'omniauth'
 gem 'devise'
-gem 'devise_token_auth'
+gem 'devise_token_auth', :git => 'https://github.com/DeanSolecki/devise_token_auth.git', :ref => '48d897b'
 gem 'active_model_serializers'
 
 
