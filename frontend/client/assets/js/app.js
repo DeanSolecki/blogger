@@ -33,45 +33,23 @@
 		}])
 
 		.controller('ProfileCtrl', ['$rootScope', '$scope', '$state', '$http', function($rootScope, $scope, $state, $http) {
-			if($rootScope.user.profile) {
-				var data = $http.get('http://localhost:8079/api/profiles/' + $rootScope.user.profile.id);
+			$scope.profileForm = {};
+
+			if($rootScope.user) {
 				$scope.profileForm = $rootScope.user.profile;
-			}
-			else {
-				$scope.profileForm = {};
+				$scope.profileForm.profileable_id = $rootScope.user.id;
+				$scope.profileForm.profileable_type = $rootScope.user.configName;
 			};
 			
 			$scope.updateProfile = function() {
-				var checkedNickname = '', checkedFirst_name = '', checkedLast_name = '';
+				if($rootScope.user) {
+					var req = {};
+					req.profile = $scope.profileForm;
 
-				if($scope.profileForm.nickname) {
-					checkedNickname = $scope.profileForm.nickname;
-				}
-
-				if($scope.profileForm.first_name) {
-					checkedFirst_name = $scope.profileForm.first_name;
-				}
-
-				if($scope.profileForm.last_name) {
-					checkedLast_name = $scope.profileForm.last_name;
-				}
-
-				if(!$rootScope.user.profile) {
-					var req = {
-						profile: {
-							nickname: checkedNickname,
-							first_name: checkedFirst_name,
-							last_name: checkedLast_name,
-							profileable_id: $rootScope.user.id,
-							profileable_type: $rootScope.user.configName
-						}
-					}
-					$http.post('http://localhost:8079/api/profiles', req);
-				}
-				else {
-					$http.patch('http://localhost:8079/api/profiles/' + $rootScope.user.id);
-				}
+					$http.patch('http://localhost:8079/api/profiles/' + $rootScope.user.profile.id, req);
+				};
 			};
+
 		}])
 
 		.controller('HomeCtrl', ['$scope', '$state', '$auth', '$http', function($scope, $state, $auth, $http) {
