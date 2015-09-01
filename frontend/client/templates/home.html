@@ -9,9 +9,10 @@ controller: HomeCtrl
 	<ul ng-repeat="post in data.posts" ng-init="newComment = {}">
 		<li>
 			<h4>{{post.title}}</h4>
+			<h5>by: {{post.nickname}} -- {{post.created_at | date:'MM/dd/yy h:mma'}}</h5>
 			<p>{{post.body}}</p>
 			<ul ng-repeat=" comment in post.comments">
-				<li>{{comment.body}} -- {{comment.commentable_id}} {{comment.commentable_type}}
+				<li>{{comment.body}} --  by: {{comment.nickname}} -- {{comment.created_at | date:'MM/dd/yy h:mma'}}
 					<span ng-show="user.configName == 'admin' || (user.id == comment.commentable_id && user.configName == comment.commentable_type)">
 						<a href="#!/" ng-click="deleteComment(comment)">Delete</a>
 						<a href="#!/" ng-click="">Edit</a>

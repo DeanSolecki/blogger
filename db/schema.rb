@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150823164350) do
+ActiveRecord::Schema.define(version: 20150901162251) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "admins", force: true do |t|
+  create_table "admins", force: :cascade do |t|
     t.string   "provider",                            null: false
     t.string   "uid",                    default: "", null: false
     t.string   "encrypted_password",     default: "", null: false
@@ -45,26 +45,28 @@ ActiveRecord::Schema.define(version: 20150823164350) do
   add_index "admins", ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true, using: :btree
   add_index "admins", ["uid", "provider"], name: "index_admins_on_uid_and_provider", unique: true, using: :btree
 
-  create_table "comments", force: true do |t|
+  create_table "comments", force: :cascade do |t|
     t.integer  "post_id"
     t.text     "body"
     t.integer  "commentable_id"
     t.string   "commentable_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "nickname"
   end
 
-  add_index "comments", ["commentable_id", "commentable_type"], name: "index_comments_on_commentable_id_and_commentable_type", using: :btree
+  add_index "comments", ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id", using: :btree
 
-  create_table "posts", force: true do |t|
+  create_table "posts", force: :cascade do |t|
     t.integer  "admin_id"
     t.text     "title"
     t.text     "body"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "nickname"
   end
 
-  create_table "profiles", force: true do |t|
+  create_table "profiles", force: :cascade do |t|
     t.string   "nickname"
     t.string   "first_name"
     t.string   "last_name"
@@ -75,9 +77,9 @@ ActiveRecord::Schema.define(version: 20150823164350) do
   end
 
   add_index "profiles", ["nickname"], name: "index_profiles_on_nickname", unique: true, using: :btree
-  add_index "profiles", ["profileable_id", "profileable_type"], name: "index_profiles_on_profileable_id_and_profileable_type", using: :btree
+  add_index "profiles", ["profileable_type", "profileable_id"], name: "index_profiles_on_profileable_type_and_profileable_id", using: :btree
 
-  create_table "users", force: true do |t|
+  create_table "users", force: :cascade do |t|
     t.string   "provider",                            null: false
     t.string   "uid",                    default: "", null: false
     t.string   "encrypted_password",     default: "", null: false

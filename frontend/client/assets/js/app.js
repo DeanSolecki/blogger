@@ -63,8 +63,9 @@
 					comment:
 						{
 							post_id: newComment.post_id,
-							commentable_id: newComment.commentable_id,
+							commentable_id: $scope.user.id,
 							commentable_type: $scope.user.configName,
+							nickname: $scope.user.profile.nickname,
 							body: newComment.body
 						}
 				}
@@ -75,7 +76,7 @@
 				$http.delete('http://localhost:8079/api/comments/' + comment.id);
 			};
 
-			$scope.testBin = "this is a test: " + JSON.stringify($scope.user);
+			$scope.testBin = "this is is here for testing: " + JSON.stringify($scope.user);
 		}])
 
 		.controller('AdminLoginCtrl', ['$scope', '$state', '$auth', function($scope, $state, $auth) {
@@ -94,13 +95,14 @@
 			};
 		}])
 
-		.controller('PostCtrl', ['$scope', '$state', '$http', function($scope, $state, $http) {
+		.controller('PostCtrl', ['$rootScope', '$scope', '$state', '$http', function($rootScope, $scope, $state, $http) {
 			$scope.submitPost = function() {
 				var req = {
 					post:
 						{
 							admin_id: $scope.postForm.admin_id,
 							title: $scope.postForm.title,
+							nickname: $rootScope.user.profile.nickname,
 							body: $scope.postForm.body
 						}
 				};
