@@ -19,11 +19,18 @@ controller: HomeCtrl
 					</span>
 				</li>
 			</ul>
-			<span ng-show="user.id">
-				<a href="#!" ng-click="showCommentBox()">Comment</a>
+			<span ng-show="user.profile.nickname">
+				<a href="#!/" ng-click="showCommentBox()">Comment</a>
+			</span>
+			<span ng-show="!user.profile.nickname">
+				<span ng-show="user.id">
+					<a href="#!/" ui-sref="profile">Create a nickname to comment</a>
+				</span>
+				<span ng-show="!user.id">
+					<p><a href="#!" ui-sref="login">Sign in</a> to comment.</p>
 			</span>
 			<textarea ng-model="newComment.body"></textarea>
-			<a class="button" href="#" ng-click="newComment.post_id = post.id; newComment.commentable_id = user.id; submitComment(newComment)">Comment</a>
+			<a class="button" href="#!/" ng-click="newComment.post_id = post.id; newComment.commentable_id = user.id; submitComment(newComment)">Comment</a>
 		</li>
 	</ul>
 	<p>{{ testBin }}</p>

@@ -37,8 +37,6 @@
 
 			if($rootScope.user) {
 				$scope.profileForm = $rootScope.user.profile;
-				$scope.profileForm.profileable_id = $rootScope.user.id;
-				$scope.profileForm.profileable_type = $rootScope.user.configName;
 			};
 			
 			$scope.updateProfile = function() {
@@ -52,7 +50,8 @@
 
 		}])
 
-		.controller('HomeCtrl', ['$scope', '$state', '$auth', '$http', function($scope, $state, $auth, $http) {
+		.controller('HomeCtrl', ['$rootScope', '$scope', '$state', '$auth', '$http',
+				function($rootScope, $scope, $state, $auth, $http) {
 			$http.get('http://localhost:8079/api/posts')
 				.then(function(response) {
 					$scope.data = response.data;
@@ -65,7 +64,7 @@
 							post_id: newComment.post_id,
 							commentable_id: $scope.user.id,
 							commentable_type: $scope.user.configName,
-							nickname: $scope.user.profile.nickname,
+							nickname: $rootScope.user.profile.nickname,
 							body: newComment.body
 						}
 				}
@@ -86,12 +85,6 @@
 						config: 'admin'
 					}
 				);
-			};
-		}])
-
-		.controller('AdminLogoutCtrl', ['$scope', '$state', '$auth', function($scope, $state, $auth) {
-			$scope.AdminLogoutClick = function() {
-				$auth.signOut();
 			};
 		}])
 
@@ -150,9 +143,6 @@
 			$auth.signOut();
 		});
 
-		$rootScope.$on('auth:login-success', function(ev, user) {
-			$rootScope.user = user;
-		});
   }
 
 })();
