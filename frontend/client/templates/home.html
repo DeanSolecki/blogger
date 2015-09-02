@@ -13,7 +13,7 @@ controller: HomeCtrl
 			<p>{{post.body}}</p>
 			<ul ng-repeat=" comment in post.comments">
 				<li>{{comment.body}} --  by: {{comment.nickname}} -- {{comment.created_at | date:'MM/dd/yy h:mma'}}
-					<span ng-show="user.configName == 'admin' || (user.id == comment.commentable_id && user.configName == comment.commentable_type)">
+					<span ng-show="user.configName == 'admin' || (user.profile.nickname == comment.nickname)">
 						<a href="#!/" ng-click="deleteComment(comment)">Delete</a>
 						<a href="#!/" ng-click="">Edit</a>
 					</span>
@@ -28,6 +28,7 @@ controller: HomeCtrl
 				</span>
 				<span ng-show="!user.id">
 					<p><a href="#!" ui-sref="login">Sign in</a> to comment.</p>
+				</span>
 			</span>
 			<textarea ng-model="newComment.body"></textarea>
 			<a class="button" href="#!/" ng-click="newComment.post_id = post.id; newComment.commentable_id = user.id; submitComment(newComment)">Comment</a>
