@@ -20,7 +20,7 @@ controller: HomeCtrl
 				</li>
 			</ul>
 			<span ng-show="user.profile.nickname">
-				<a href="#!/" ng-click="showCommentBox()">Comment</a>
+				<blogComment></blogComment>
 			</span>
 			<span ng-show="!user.profile.nickname">
 				<span ng-show="user.id">
