@@ -57,6 +57,12 @@
 					$scope.data = response.data;
 				});
 
+			$scope.showCommentBox = {};
+			
+			$scope.fireCommentBox = function(id) {
+				$scope.showCommentBox.id = true;
+			};
+
 			$scope.submitComment = function(newComment) {
 				var req = {
 					comment:
@@ -103,13 +109,6 @@
 				$http.post('http://localhost:8079/api/posts', req);
 			};
 		}])
-
-		.directive('blogComment', function() {
-			return {
-				restrict: 'E',
-				templateUrl: 'directives/blog-comment.html'
-			};
-		})
   ;
 
   config.$inject = ['$urlRouterProvider', '$locationProvider', '$authProvider'];
