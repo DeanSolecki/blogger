@@ -20,8 +20,8 @@ controller: HomeCtrl
 				</li>
 			</ul>
 			<span ng-show="user.profile.nickname">
-				<a href="#!/" ng-click="fireCommentBox(post.id)" ng-hide="showCommentBox[post.id]">Comment</a>
-				<span ng-show="showCommentBox[post.id]">
+				<a href="#!/" ng-click="fireCommentBox(post.id)" ng-hide="showCommentBox.{{post.id}}">Comment</a>
+				<span ng-show="showCommentBox.{{post.id}}">
 					<textarea ng-model="post.newComment"></textarea>
 					<a href="#!/" ng-click="submitComment(post)">Submit</a>
 				</span>
