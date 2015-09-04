@@ -55,23 +55,29 @@
 			$http.get('http://localhost:8079/api/posts')
 				.then(function(response) {
 					$scope.data = response.data;
+					$scope.postCount = response.data.pop().id;
+					$scope.showEditBox = Create2DArray($scope.postCount + 1);
 				});
 
-			$scope.showCommentBox = {};
+			$scope.showCommentBox = [];
+
+			$scope.fireEditBox = function(comment) {
+				$scope.showEditBox[comment.post_id][comment.id] = 1;
+			}
 			
 			$scope.fireCommentBox = function(id) {
-				$scope.showCommentBox.id = true;
+				$scope.showCommentBox[id] = 1;
 			};
 
-			$scope.submitComment = function(newComment) {
+			$scope.submitComment = function(post) {
 				var req = {
 					comment:
 						{
-							post_id: newComment.post_id,
+							post_id: post.id,
 							commentable_id: $scope.user.id,
 							commentable_type: $scope.user.configName,
-							nickname: $rootScope.user.profile.nickname,
-							body: newComment.body
+							nickname: $scope.user.profile.nickname,
+							body: post.newComment
 						}
 				}
 				$http.post('http://localhost:8079/api/comments', req);
@@ -79,6 +85,16 @@
 
 			$scope.deleteComment = function(comment) {
 				$http.delete('http://localhost:8079/api/comments/' + comment.id);
+			};
+
+			function Create2DArray(rows) {
+				var arr = [];
+
+				for (var i=0;i<rows;i++) {
+					arr[i] = [];
+				}
+
+				return arr;
 			};
 
 			$scope.testBin = "this is is here for testing: " + JSON.stringify($scope.user);

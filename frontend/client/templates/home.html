@@ -15,20 +15,24 @@ controller: HomeCtrl
 				<li>{{comment.body}} --  by: {{comment.nickname}} -- {{comment.created_at | date:'MM/dd/yy h:mma'}}
 					<span ng-show="user.configName == 'admin' || (user.profile.nickname == comment.nickname)">
 						<a href="#!/" ng-click="deleteComment(comment)">Delete</a>
-						<a href="#!/" ng-click="">Edit</a>
+						<a href="#!/" ng-click="fireEditBox(comment)" ng-hide="showEditBox[post][comment.id]">Edit</a>
+						<span ng-show="showEditBox[post][comment.id]">
+							<textarea ng-model="comment.body"></textarea>
+							<a class="button" href="#!/" ng-click="editComment(comment)">Update</a>
+						</span>
 					</span>
 				</li>
 			</ul>
 			<span ng-show="user.profile.nickname">
-				<a href="#!/" ng-click="fireCommentBox(post.id)" ng-hide="showCommentBox.{{post.id}}">Comment</a>
-				<span ng-show="showCommentBox.{{post.id}}">
+				<a href="#!/" ng-click="fireCommentBox(post.id)" ng-hide="showCommentBox[post.id]">Comment</a>
+				<span ng-show="showCommentBox[post.id]">
 					<textarea ng-model="post.newComment"></textarea>
-					<a href="#!/" ng-click="submitComment(post)">Submit</a>
+					<a class="button" href="#!/" ng-click="submitComment(post)">Submit</a>
 				</span>
 			</span>
 			<span ng-show="!user.profile.nickname">
 				<span ng-show="user.id">
-					<a href="#!/" ui-sref="profile">Create a nickname to comment</a>
+					<p>Create a <a href="#!/" ui-sref="profile">nickname</a> to comment</p>
 				</span>
 				<span ng-show="!user.id">
 					<p><a href="#!" ui-sref="login">Sign in</a> to comment.</p>
