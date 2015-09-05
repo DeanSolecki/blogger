@@ -15,10 +15,11 @@ controller: HomeCtrl
 				<li>{{comment.body}} --  by: {{comment.nickname}} -- {{comment.created_at | date:'MM/dd/yy h:mma'}}
 					<span ng-show="user.configName == 'admin' || (user.profile.nickname == comment.nickname)">
 						<a href="#!/" ng-click="deleteComment(comment)">Delete</a>
-						<a href="#!/" ng-click="fireEditBox(comment)" ng-hide="showEditBox[post][comment.id]">Edit</a>
-						<span ng-show="showEditBox[post][comment.id]">
+						<a href="#!/" ng-click="fireEditBox(comment)" ng-hide="showEditBox[post.id][comment.id]">Edit</a>
+						<span ng-show="showEditBox[post.id][comment.id]">
 							<textarea ng-model="comment.body"></textarea>
-							<a class="button" href="#!/" ng-click="editComment(comment)">Update</a>
+							<a class="button" href="#!/" ng-click="updateComment(comment)">Update</a>
+							<a class="button warning" href="#!/" ng-click="showEditBox[post.id][comment.id] = 0">Cancel</a>
 						</span>
 					</span>
 				</li>
@@ -28,6 +29,7 @@ controller: HomeCtrl
 				<span ng-show="showCommentBox[post.id]">
 					<textarea ng-model="post.newComment"></textarea>
 					<a class="button" href="#!/" ng-click="submitComment(post)">Submit</a>
+					<a class="button warning" href="#!/" ng-click="showCommentBox[post.id] = 0">Cancel</a>
 				</span>
 			</span>
 			<span ng-show="!user.profile.nickname">

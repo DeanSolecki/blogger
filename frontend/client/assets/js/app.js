@@ -55,14 +55,15 @@
 			$http.get('http://localhost:8079/api/posts')
 				.then(function(response) {
 					$scope.data = response.data;
-					$scope.postCount = response.data.pop().id;
-					$scope.showEditBox = Create2DArray($scope.postCount + 1);
+					$scope.postsCount = $scope.data.posts[$scope.data.posts.length - 1].id;
+					$scope.showEditBox = Create2DArray($scope.postsCount + 1);
 				});
 
 			$scope.showCommentBox = [];
 
 			$scope.fireEditBox = function(comment) {
 				$scope.showEditBox[comment.post_id][comment.id] = 1;
+				$scope.testBin = $scope.showEditBox[comment.post_id][comment.id];
 			}
 			
 			$scope.fireCommentBox = function(id) {
@@ -87,6 +88,21 @@
 				$http.delete('http://localhost:8079/api/comments/' + comment.id);
 			};
 
+			$scope.updateComment = function(comment) {
+				var req = {
+					comment:
+					{
+						post_id: comment.post_id,
+						commentable_id: comment.commentable_id,
+						commentable_type: comment.commentable_type,
+						nickname: comment.nickname,
+						body: comment.body
+					}
+				};
+
+				$http.patch('http://localhost:8079/api/comments/' + comment.id, req);
+			};
+
 			function Create2DArray(rows) {
 				var arr = [];
 
@@ -96,8 +112,6 @@
 
 				return arr;
 			};
-
-			$scope.testBin = "this is is here for testing: " + JSON.stringify($scope.user);
 		}])
 
 		.controller('AdminLoginCtrl', ['$scope', '$state', '$auth', function($scope, $state, $auth) {
