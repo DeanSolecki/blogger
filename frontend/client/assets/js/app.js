@@ -54,20 +54,42 @@
 				function($rootScope, $scope, $state, $auth, $http) {
 			$http.get('http://localhost:8079/api/posts')
 				.then(function(response) {
-					$scope.data = response.data;
-					$scope.postsCount = $scope.data.posts[$scope.data.posts.length - 1].id;
+					$scope.posts = response.data.posts;
+					$scope.postsCount = $scope.posts[$scope.posts.length - 1].id;
 					$scope.showEditBox = Create2DArray($scope.postsCount + 1);
+					$scope.showEditPostBox = [];
+					$scope.showCommentBox = [];
 				});
-
-			$scope.showCommentBox = [];
 
 			$scope.fireEditBox = function(comment) {
 				$scope.showEditBox[comment.post_id][comment.id] = 1;
 				$scope.testBin = $scope.showEditBox[comment.post_id][comment.id];
 			}
 			
+			$scope.fireEditPostBox = function(id) {
+				$scope.showEditPostBox[id] = 1;
+			}
+
 			$scope.fireCommentBox = function(id) {
 				$scope.showCommentBox[id] = 1;
+			};
+
+			$scope.updatePost = function(post) {
+				var req = {
+					post: {
+						post_id: post.id,
+						admin_id: $scope.user.id,
+						nickname: $scope.user.profile.nickname,
+						title: post.title,
+						body: post.body
+					}
+				};
+
+				$http.patch('http://localhost:8079/api/posts/' + post.id, req);
+			};
+
+			$scope.deletePost = function(id) {
+				$http.delete('http://localhost:8079/api/posts/' + id);
 			};
 
 			$scope.submitComment = function(post) {

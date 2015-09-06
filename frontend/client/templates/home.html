@@ -6,11 +6,25 @@ controller: HomeCtrl
 
 <div class="grid-container">
 	<h2>Blog Posts</h2>
-	<ul ng-repeat="post in data.posts track by post.id" ng-init="newComment = {}">
+	<ul ng-repeat="post in posts | orderBy: 'id' track by post.id" ng-init="newComment = {}">
 		<li>
 			<h4>{{post.title}}</h4>
 			<h5>by: {{post.nickname}} -- {{post.created_at | date:'MM/dd/yy h:mma'}}</h5>
 			<p>{{post.body}}</p>
+			<span ng-show="user.configName == 'admin'">
+				<a href="#!/" ng-click="deletePost(post.id)">Delete</a>
+				<a href="#!/" ng-click="fireEditPostBox(post.id)">Edit</a>
+				<span ng-show="showEditPostBox[post.id]">
+					<label>Title
+						<input type="text" ng-model="post.title">
+					</label>
+					<label>Body
+						<textarea ng-model="post.body"></textarea>
+					</label>
+					<a class="button" href="#!/" ng-click="updatePost(post)">Submit</a>
+					<a class="button warning" href="#!/" ng-click="showEditPostBox[post.id] = 0">Cancel</a>
+				</span>
+			</span>
 			<ul ng-repeat=" comment in post.comments">
 				<li>{{comment.body}} --  by: {{comment.nickname}} -- {{comment.created_at | date:'MM/dd/yy h:mma'}}
 					<span ng-show="user.configName == 'admin' || (user.profile.nickname == comment.nickname)">
