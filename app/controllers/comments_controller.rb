@@ -6,7 +6,15 @@ class CommentsController < ApplicationController
   respond_to :json
 
   def index
-    @comments = Comment.all
+		if params[:nickname]
+			@comments = Array.new()
+			Comment.where(nickname: params[:nickname]).find_each do |comment|
+				@comments << comment
+			end
+		else
+			@comments = Comment.all
+		end
+
     respond_with(@comments)
   end
 

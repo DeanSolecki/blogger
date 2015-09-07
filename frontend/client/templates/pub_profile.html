@@ -1,0 +1,16 @@
+---
+name: pub_profile
+url: /pub_profile
+controller: PubProfileCtrl
+---
+
+<div class="grid-container">
+	<h3>{{ data.profile.nickname }}</h3>
+	<p>Member since: {{ data.profile.created_at | date:'MM/dd/yy h:mma'}}</p>
+	<h5>Recent Comments</h5>
+	<ul ng-repeat="comment in data.comments | limitTo:10">
+		<li>
+			<p>{{ comment.body }} -- {{ comment.created_at | date:'MM/dd/yy h:mma'}}</p>
+		</li>
+	</ul>
+</div>

@@ -16,7 +16,11 @@
 		
 		.controller('LoginCtrl', ['$scope', '$state', '$auth', function($scope, $state, $auth) {
 			$scope.LoginClick = function() {
-				$auth.submitLogin($scope.loginForm);
+				$auth.submitLogin($scope.loginForm)
+					.then(function(resp) {
+						$state.go('home');
+					});
+				
 			}
 		}])
 
@@ -50,8 +54,13 @@
 
 		}])
 
-		.controller('HomeCtrl', ['$rootScope', '$scope', '$state', '$auth', '$http',
-				function($rootScope, $scope, $state, $auth, $http) {
+		.controller('PubProfileCtrl', ['$scope', '$http', 'passData',
+				function($scope, $http, passData) {
+					$scope.data = passData.get();
+		}])
+
+		.controller('HomeCtrl', ['$rootScope', '$scope', '$state', '$auth', '$http', 'passData',
+				function($rootScope, $scope, $state, $auth, $http, passData) {
 			$http.get('http://localhost:8079/api/posts')
 				.then(function(response) {
 					$scope.posts = response.data.posts;
@@ -59,7 +68,10 @@
 					$scope.showEditBox = Create2DArray($scope.postsCount + 1);
 					$scope.showEditPostBox = [];
 					$scope.showCommentBox = [];
+					$scope.showDeletePostButtons = [];
 				});
+			
+			$scope.showNewPostForm = 0;
 
 			$scope.fireEditBox = function(comment) {
 				$scope.showEditBox[comment.post_id][comment.id] = 1;
@@ -70,8 +82,25 @@
 				$scope.showEditPostBox[id] = 1;
 			}
 
+			$scope.fireDeletePostButtons = function(id) {
+				$scope.showDeletePostButtons[id] = 1;
+			};
+
 			$scope.fireCommentBox = function(id) {
 				$scope.showCommentBox[id] = 1;
+			};
+
+			$scope.submitPost = function(post) {
+				var req = {
+					post: {
+						admin_id: $scope.user.id,
+						nickname: $scope.user.profile.nickname,
+						title: post.title,
+						body: post.body
+					}
+				};
+
+				$http.post('http://localhost:8079/api/posts', req);
 			};
 
 			$scope.updatePost = function(post) {
@@ -125,6 +154,27 @@
 				$http.patch('http://localhost:8079/api/comments/' + comment.id, req);
 			};
 
+			$scope.viewProfile = function(nickname) {
+				var data = {};
+				$http({
+					url: 'http://localhost:8079/api/profiles/0/',
+					method: 'GET',
+					params: {nickname: nickname}
+				}).then(function(response) {
+					data.profile = response.data.profile;
+
+					$http({
+						url: 'http://localhost:8079/api/comments/',
+						method: 'GET',
+						params: {nickname: nickname}
+					}).then(function(response) {
+						data.comments = response.data.comments;
+						passData.set(data);
+						$state.go('pub_profile');
+					});
+				});
+			};
+
 			function Create2DArray(rows) {
 				var arr = [];
 
@@ -146,21 +196,24 @@
 			};
 		}])
 
-		.controller('PostCtrl', ['$rootScope', '$scope', '$state', '$http', function($rootScope, $scope, $state, $http) {
-			$scope.submitPost = function() {
-				var req = {
-					post:
-						{
-							admin_id: $scope.postForm.admin_id,
-							title: $scope.postForm.title,
-							nickname: $rootScope.user.profile.nickname,
-							body: $scope.postForm.body
-						}
-				};
+		// Services
+		.factory('passData', function() {
+			var savedData = {}
 
-				$http.post('http://localhost:8079/api/posts', req);
-			};
-		}])
+			function set(data) {
+				savedData = data;
+			}
+
+			function get() {
+				return savedData;
+			}
+
+			return {
+				set: set,
+				get: get
+			}
+		})
+
   ;
 
   config.$inject = ['$urlRouterProvider', '$locationProvider', '$authProvider'];

@@ -40,7 +40,11 @@ class ProfilesController < ApplicationController
 
   private
     def set_profile
-      @profile = Profile.find(params[:id])
+			if params[:nickname]
+				@profile = Profile.find_by_nickname(params[:nickname])
+			else
+				@profile = Profile.find(params[:id])
+			end
     end
 
     def profile_params
