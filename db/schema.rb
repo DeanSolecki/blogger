@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150901162251) do
+ActiveRecord::Schema.define(version: 20150907153612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 20150901162251) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "nickname"
+    t.string   "post_title"
   end
 
   add_index "comments", ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id", using: :btree
@@ -64,6 +65,7 @@ ActiveRecord::Schema.define(version: 20150901162251) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "nickname"
+    t.string   "category"
   end
 
   create_table "profiles", force: :cascade do |t|

@@ -64,18 +64,37 @@
 			$http.get('http://localhost:8079/api/posts')
 				.then(function(response) {
 					$scope.posts = response.data.posts;
-					$scope.postsCount = $scope.posts[$scope.posts.length - 1].id;
-					$scope.showEditBox = Create2DArray($scope.postsCount + 1);
+					$scope.postsHighestId = $scope.posts[$scope.posts.length - 1].id;
+					$scope.showEditBox = Create2DArray($scope.highestId + 1);
+					$scope.postsCount = $scope.posts.length;
 					$scope.showEditPostBox = [];
 					$scope.showCommentBox = [];
 					$scope.showDeletePostButtons = [];
+					$scope.postTitles = [];
+					$scope.lifeTitles = [];
+					$scope.devTitles = [];
+					$scope.styleTitles = [];
+
+					for(var i = 0; i < $scope.postsCount; i++) {
+						$scope.postTitles.unshift({ title: $scope.posts[i].title, id: $scope.posts[i].id });
+
+						if($scope.posts[i].category == 'Life and Times of Dean S.') {
+							$scope.lifeTitles.unshift({ title: $scope.posts[i].title, id: $scope.posts[i].id});
+						}
+						else if ($scope.posts[i].category == 'Development') {
+							$scope.devTitles.unshift({ title: $scope.posts[i].title, id: $scope.posts[i].id});
+						}
+						else if ($scope.posts[i].category == 'Style') {
+							$scope.styleTitles.unshift({ title: $scope.posts[i].title, id: $scope.posts[i].id});
+						}
+					};
+
 				});
 			
 			$scope.showNewPostForm = 0;
 
 			$scope.fireEditBox = function(comment) {
 				$scope.showEditBox[comment.post_id][comment.id] = 1;
-				$scope.testBin = $scope.showEditBox[comment.post_id][comment.id];
 			}
 			
 			$scope.fireEditPostBox = function(id) {
@@ -96,7 +115,8 @@
 						admin_id: $scope.user.id,
 						nickname: $scope.user.profile.nickname,
 						title: post.title,
-						body: post.body
+						body: post.body,
+						category: post.category
 					}
 				};
 

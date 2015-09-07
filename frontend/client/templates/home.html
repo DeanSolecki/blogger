@@ -3,92 +3,146 @@ name: home
 url: /
 controller: HomeCtrl
 ---
-
-<div class="grid-container">
-	<h2>Blog Posts</h2>
-	<!-- Create post, admin only -->
-	<span ng-show="user.configName == 'admin'">
-		<a href="#!/" ng-hide="showNewPostForm" ng-click="showNewPostForm = 1">New Post</a>
-		<span ng-show="showNewPostForm">
-			<form ng-init="newPostForm = {}">
-				<label>Title
-					<input type="text" ng-model="newPostForm.title">
-				</label>
-				<label>Body
-					<textarea ng-model="newPostForm.body"></textarea>
-				</label>
-				<a class="button" href="#!/" ng-click="submitPost(newPostForm)">Publish</a>
-				<a class="button warning" href="#!/" ng-click="showNewPostForm = 0">Cancel</a>
-			</form>
-		</span>
-	</span>
-
-	<!-- Loop over posts and add elements based on permissions -->
-	<ul ng-repeat="post in posts | orderBy: 'id':true track by post.id" ng-init="newComment = {}">
-		<li>
-			<h4>{{post.title}}</h4>
-			<h5>by: <a href="#!/" ng-click="viewProfile(post.nickname)">{{post.nickname}}</a> -- {{post.created_at | date:'MM/dd/yy h:mma'}}</h5>
-			<p>{{post.body}} 
-				<!-- Admin options -->
-				<span ng-show="user.configName == 'admin'">
-					--
-					<a href="#!/" ng-click="fireDeletePostButtons(post.id)" ng-hide="showDeletePostButtons[post.id]">Delete</a>
-					<a href="#!/" ng-click="fireEditPostBox(post.id)" ng-hide="showEditPostBox[post.id]">Edit</a>
-					<span ng-show="showDeletePostButtons[post.id]">
-						<br/>
-						<a class="button alert" ng-click="deletePost(post.id)">Delete</a>
-						<a class="button warning" ng-click="showDeletePostButtons[post.id] = 0">Cancel</a>
-					</span>
-					<span ng-show="showEditPostBox[post.id]">
-						<label>Title
-							<input type="text" ng-model="post.title">
-						</label>
-						<label>Body
-							<textarea ng-model="post.body"></textarea>
-						</label>
-						<a class="button" href="#!/" ng-click="updatePost(post)">Submit</a>
-						<a class="button warning" href="#!/" ng-click="showEditPostBox[post.id] = 0">Cancel</a>
-					</span>
-				</span>
-			</p>
-			
-			<!-- Loop over comments and add elements based on permissions -->
-			<ul ng-repeat=" comment in post.comments">
-				<li>{{comment.body}} --  by: <a href="#!/" ng-click="viewProfile(comment.nickname)">{{comment.nickname}}</a> -- {{comment.created_at | date:'MM/dd/yy h:mma'}}
-					<span ng-show="user.configName == 'admin' || (user.profile.nickname == comment.nickname)">
-						<a href="#!/" ng-click="deleteComment(comment)">Delete</a>
-						<a href="#!/" ng-click="fireEditBox(comment)" ng-hide="showEditBox[post.id][comment.id]">Edit</a>
-						<span ng-show="showEditBox[post.id][comment.id]">
-							<textarea ng-model="comment.body"></textarea>
-							<a class="button" href="#!/" ng-click="updateComment(comment)">Update</a>
-							<a class="button warning" href="#!/" ng-click="showEditBox[post.id][comment.id] = 0">Cancel</a>
-						</span>
-					</span>
+<!-- blog menu -->
+<div class="vertical grid-block medium-4 large-2">
+	<div class="grid-block small-12">
+		<div class="grid-container">
+			<ul class="vertical menu-bar">
+				<li><a href="#!/"><h3>All Posts</h3></a></li>
+				<li ng-repeat="title in postTitles">
+					<a href="#!/">{{ title.title }}</a>
 				</li>
 			</ul>
+		</div><!-- grid-container -->
+	</div><!-- grid-block -->
+	<div class="grid-block small-12">
+		<div class="grid-container">
+			<ul class="vertical menu-bar">
+				<li><a href="#!/"><h3>Life and Times of Dean S.</h3></a></li>
+				<li ng-repeat="title in lifeTitles">
+					<a href="#!/">{{ title.title }}</a>
+				</li>
+			</ul>
+		</div><!-- grid-container -->
+	</div><!-- grid-block -->
+	<div class="grid-block small-12">
+		<div class="grid-container">
+			<ul class="vertical menu-bar">
+				<li><a href="#!/"><h3>Development</h3></a></li>
+				<li ng-repeat="title in devTitles">
+					<a href="#!/">{{ title.title }}</a>
+				</li>
+			</ul>
+		</div><!-- grid-container -->
+	</div><!-- grid-block -->
+	<div class="grid-block small-12">
+		<div class="grid-container">
+			<ul class="vertical menu-bar">
+				<li><a href="#!/"><h3>Style</h3></a></li>
+				<li ng-repeat="title in styleTitles">
+					<a href="#!/">{{ title.title }}</a>
+				</li>
+			</ul>
+		</div><!-- grid-container -->
+	</div><!-- grid-block -->
+</div><!-- .grid-block -->
 
-			<!-- Add comment box for logged in users -->
-			<span ng-show="user.profile.nickname">
-				<a href="#!/" ng-click="fireCommentBox(post.id)" ng-hide="showCommentBox[post.id]">Comment</a>
-				<span ng-show="showCommentBox[post.id]">
-					<textarea ng-model="post.newComment"></textarea>
-					<a class="button" href="#!/" ng-click="submitComment(post)">Submit</a>
-					<a class="button warning" href="#!/" ng-click="showCommentBox[post.id] = 0">Cancel</a>
-				</span>
+<!-- blog content -->
+<div class="grid-block small-12 medium-4 large-8">
+	<div class="grid-container">
+		<h2>Blog Posts</h2>
+		<!-- Create post, admin only -->
+		<span ng-show="user.configName == 'admin'">
+			<a href="#!/" ng-hide="showNewPostForm" ng-click="showNewPostForm = 1">New Post</a>
+			<span ng-show="showNewPostForm">
+				<form ng-init="newPostForm = {}">
+					<label>Title
+						<input type="text" ng-model="newPostForm.title">
+					</label>
+					<label>Category</label>
+					<input type="radio" name="category" value="Life and Times of Dean S." id="catLife" ng-model="newPostForm.category"><label for="catLife">Life and Times</label>
+					<input type="radio" name="category" value="Development" id="catDev" ng-model="newPostForm.category"><label for="catDev">Dev</label>
+					<input type="radio" name="category" value="Style" id="catStyle" ng-model="newPostForm.category"><label for="catStyle">Style</label>
+					<label>Body
+						<textarea ng-model="newPostForm.body"></textarea>
+					</label>
+					<a class="button" href="#!/" ng-click="submitPost(newPostForm)">Publish</a>
+					<a class="button warning" href="#!/" ng-click="showNewPostForm = 0">Cancel</a>
+				</form>
 			</span>
+		</span>
 
-			<!-- suggest sign in or create nickname based on user state -->
-			<span ng-show="!user.profile.nickname">
-				<span ng-show="user.id">
-					<p>Create a <a href="#!/" ui-sref="profile">nickname</a> to comment</p>
-				</span>
-				<span ng-show="!user.id">
-					<p><a href="#!" ui-sref="login">Sign in</a> to comment.</p>
-				</span>
-			</span>
-		</li>
-	</ul>
+		<!-- Loop over posts and add elements based on permissions -->
+		<ul ng-repeat="post in posts | orderBy: 'id':true track by post.id" ng-init="newComment = {}">
+			<li>
+				<h4>{{post.title}}</h4>
+				<h5>by: <a href="#!/" ng-click="viewProfile(post.nickname)">{{post.nickname}}</a> -- {{post.created_at | date:'MM/dd/yy h:mma'}}</h5>
+				<p>{{post.body}} 
+					<!-- Admin options -->
+					<span ng-show="user.configName == 'admin'">
+						--
+						<a href="#!/" ng-click="fireDeletePostButtons(post.id)" ng-hide="showDeletePostButtons[post.id]">Delete</a>
+						<a href="#!/" ng-click="fireEditPostBox(post.id)" ng-hide="showEditPostBox[post.id]">Edit</a>
+						<span ng-show="showDeletePostButtons[post.id]">
+							<br/>
+							<a class="button alert" ng-click="deletePost(post.id)">Delete</a>
+							<a class="button warning" ng-click="showDeletePostButtons[post.id] = 0">Cancel</a>
+						</span>
+						<span ng-show="showEditPostBox[post.id]">
+							<label>Title
+								<input type="text" ng-model="post.title">
+							</label>
+							<label>Body
+								<textarea ng-model="post.body"></textarea>
+							</label>
+							<a class="button" href="#!/" ng-click="updatePost(post)">Submit</a>
+							<a class="button warning" href="#!/" ng-click="showEditPostBox[post.id] = 0">Cancel</a>
+						</span>
+					</span>
+				</p>
+				
+				<!-- Loop over comments and add elements based on permissions -->
+				<ul ng-repeat=" comment in post.comments">
+					<li>{{comment.body}} --  by: <a href="#!/" ng-click="viewProfile(comment.nickname)">{{comment.nickname}}</a> -- {{comment.created_at | date:'MM/dd/yy h:mma'}}
+						<span ng-show="user.configName == 'admin' || (user.profile.nickname == comment.nickname)">
+							<a href="#!/" ng-click="deleteComment(comment)">Delete</a>
+							<a href="#!/" ng-click="fireEditBox(comment)" ng-hide="showEditBox[post.id][comment.id]">Edit</a>
+							<span ng-show="showEditBox[post.id][comment.id]">
+								<textarea ng-model="comment.body"></textarea>
+								<a class="button" href="#!/" ng-click="updateComment(comment)">Update</a>
+								<a class="button warning" href="#!/" ng-click="showEditBox[post.id][comment.id] = 0">Cancel</a>
+							</span>
+						</span>
+					</li>
+				</ul>
 
-	<!-- testing target populated in app.js -->
-	<p>{{ testBin }}</p>
-</div>
+				<!-- Add comment box for logged in users -->
+				<span ng-show="user.profile.nickname">
+					<a href="#!/" ng-click="fireCommentBox(post.id)" ng-hide="showCommentBox[post.id]">Comment</a>
+					<span ng-show="showCommentBox[post.id]">
+						<textarea ng-model="post.newComment"></textarea>
+						<a class="button" href="#!/" ng-click="submitComment(post)">Submit</a>
+						<a class="button warning" href="#!/" ng-click="showCommentBox[post.id] = 0">Cancel</a>
+					</span>
+				</span>
+
+				<!-- suggest sign in or create nickname based on user state -->
+				<span ng-show="!user.profile.nickname">
+					<span ng-show="user.id">
+						<p>Create a <a href="#!/" ui-sref="profile">nickname</a> to comment</p>
+					</span>
+					<span ng-show="!user.id">
+						<p><a href="#!" ui-sref="login">Sign in</a> to comment.</p>
+					</span>
+				</span>
+			</li>
+		</ul>
+
+		<!-- testing target populated in app.js -->
+		<p>{{ testBin }}</p>
+	</div><!-- .grid-container -->
+</div><!-- .grid-block -->
+
+<!-- right nav -->
+<div class="grid-block medium-4 large-2"
+</div><!-- .grid-block -->
