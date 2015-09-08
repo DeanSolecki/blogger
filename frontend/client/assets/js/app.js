@@ -36,6 +36,16 @@
 			}
 		}])
 
+		.controller('PostCtrl', ['$scope', '$state', '$http', 'passData', 'viewer',
+				function($scope, $state, $http, passData, viewer) {
+					$scope.post = passData.get();
+
+					$scope.viewProfile = function(nickname) {
+						viewer.go(nickname);
+					};
+		}])
+
+
 		.controller('ProfileCtrl', ['$rootScope', '$scope', '$state', '$http', function($rootScope, $scope, $state, $http) {
 			$scope.profileForm = {};
 
@@ -59,13 +69,13 @@
 					$scope.data = passData.get();
 		}])
 
-		.controller('HomeCtrl', ['$rootScope', '$scope', '$state', '$auth', '$http', 'passData',
-				function($rootScope, $scope, $state, $auth, $http, passData) {
+		.controller('HomeCtrl', ['$scope', '$state', '$http', 'passData', 'viewer', 'resourcer',
+				function($scope, $state, $http, passData, viewer, resourcer) {
 			$http.get('http://localhost:8079/api/posts')
 				.then(function(response) {
 					$scope.posts = response.data.posts;
 					$scope.postsHighestId = $scope.posts[$scope.posts.length - 1].id;
-					$scope.showEditBox = Create2DArray($scope.highestId + 1);
+					$scope.showEditBox = Create2DArray($scope.postsHighestId + 1);
 					$scope.postsCount = $scope.posts.length;
 					$scope.showEditPostBox = [];
 					$scope.showCommentBox = [];
@@ -91,6 +101,7 @@
 
 				});
 			
+			// Presentation controls
 			$scope.showNewPostForm = 0;
 
 			$scope.fireEditBox = function(comment) {
@@ -109,90 +120,50 @@
 				$scope.showCommentBox[id] = 1;
 			};
 
-			$scope.submitPost = function(post) {
-				var req = {
-					post: {
-						admin_id: $scope.user.id,
-						nickname: $scope.user.profile.nickname,
-						title: post.title,
-						body: post.body,
-						category: post.category
-					}
-				};
-
-				$http.post('http://localhost:8079/api/posts', req);
+			// Post methods
+			$scope.publishPost = function(post) {
+				post.admin_id = $scope.user.id;
+				post.nickname = $scope.user.profile.nickname;
+				resourcer.publishPost(post);
 			};
 
 			$scope.updatePost = function(post) {
-				var req = {
-					post: {
-						post_id: post.id,
-						admin_id: $scope.user.id,
-						nickname: $scope.user.profile.nickname,
-						title: post.title,
-						body: post.body
-					}
-				};
-
-				$http.patch('http://localhost:8079/api/posts/' + post.id, req);
+				post.admin_id = $scope.user.id;
+				post.nickname = $scope.user.profile.nickname;
+				resourcer.updatePost(post);
 			};
 
 			$scope.deletePost = function(id) {
-				$http.delete('http://localhost:8079/api/posts/' + id);
+				resourcer.deletePost(id);
 			};
 
-			$scope.submitComment = function(post) {
-				var req = {
-					comment:
-						{
-							post_id: post.id,
-							commentable_id: $scope.user.id,
-							commentable_type: $scope.user.configName,
-							nickname: $scope.user.profile.nickname,
-							body: post.newComment
-						}
-				}
-				$http.post('http://localhost:8079/api/comments', req);
+			$scope.viewPost = function(id) {
+				viewer.viewPost(id);
 			};
 
-			$scope.deleteComment = function(comment) {
-				$http.delete('http://localhost:8079/api/comments/' + comment.id);
+			// Comment methods
+			$scope.publishComment = function(post) {
+				var comment = {};
+				comment.commentable_id = $scope.user.id;
+				comment.commentable_type = $scope.user.configName;
+				comment.nickname = $scope.user.profile.nickname;
+				comment.post_id = post.id;
+				comment.post_title = post.title;
+				comment.body = post.newComment;
+
+				resourcer.publishComment(comment);
 			};
 
 			$scope.updateComment = function(comment) {
-				var req = {
-					comment:
-					{
-						post_id: comment.post_id,
-						commentable_id: comment.commentable_id,
-						commentable_type: comment.commentable_type,
-						nickname: comment.nickname,
-						body: comment.body
-					}
-				};
+				resourcer.updateComment(comment);
+			};
 
-				$http.patch('http://localhost:8079/api/comments/' + comment.id, req);
+			$scope.deleteComment = function(id) {
+				resourcer.deleteComment(id);
 			};
 
 			$scope.viewProfile = function(nickname) {
-				var data = {};
-				$http({
-					url: 'http://localhost:8079/api/profiles/0/',
-					method: 'GET',
-					params: {nickname: nickname}
-				}).then(function(response) {
-					data.profile = response.data.profile;
-
-					$http({
-						url: 'http://localhost:8079/api/comments/',
-						method: 'GET',
-						params: {nickname: nickname}
-					}).then(function(response) {
-						data.comments = response.data.comments;
-						passData.set(data);
-						$state.go('pub_profile');
-					});
-				});
+				viewer.go(nickname);
 			};
 
 			function Create2DArray(rows) {
@@ -216,7 +187,7 @@
 			};
 		}])
 
-		// Services
+		// Factories
 		.factory('passData', function() {
 			var savedData = {}
 
@@ -233,6 +204,143 @@
 				get: get
 			}
 		})
+
+		// Services
+			.service('viewer', ['$http', '$state', 'passData', 'resourcer', function($http, $state, passData, resourcer) {
+				this.go = function(nickname) {
+					var data = {};
+					$http({
+						url: 'http://localhost:8079/api/profiles/0/',
+						method: 'GET',
+						params: {nickname: nickname}
+					})
+						.then(function(response) {
+							data.profile = response.data.profile;
+
+							$http({
+								url: 'http://localhost:8079/api/comments/',
+								method: 'GET',
+								params: {nickname: nickname}
+							})
+								.then(function(response) {
+									data.comments = response.data.comments;
+									passData.set(data);
+									$state.go('pub_profile');
+								});
+						});
+				};
+
+				this.viewPost = function(id) {
+					resourcer.getPost(id)
+						.then(function(response) {
+							passData.set(response.post);
+							$state.go('post');
+						})
+				}
+			}])
+
+			.service('resourcer', ['$http', function($http) {
+				var api = 'http://localhost:8079/api/';
+
+				// Presentation
+				this.getOne = function(resource, id, params) {
+					return $http.get(api + resource + 's/' + id + '/', params)
+						.then(function (response) {
+							return response.data;
+						})
+				}
+
+				// Post
+				this.publishPost = function(post) {
+					var req = postReqHelper(post);
+
+					return $http.post(api + 'posts', req)
+						.then(function(response) {
+							return response;
+						})
+				}
+
+				this.updatePost = function(post) {
+					var req = postReqHelper(post);
+
+					return $http.patch(api + 'posts/' + post.id, req)
+						.then(function(response) {
+							return response;
+						})
+				}
+
+				this.deletePost = function(id) {
+					return $http.delete(api + 'posts/' + id)
+						.then(function(response) {
+							return response;
+						})
+				}
+
+				this.getPost = function(id) {
+					return $http.get(api + 'posts/' + id)
+						.then(function (response) {
+							return response.data;
+						})
+				}
+
+				// Comment
+				this.publishComment = function(comment) {
+					var req = commentReqHelper(comment);
+
+					return $http.post(api + 'comments/', req)
+						.then(function(response) {
+							return response;
+						})
+				}
+
+				this.updateComment = function(comment) {
+					var req = commentReqHelper(comment);
+
+					return $http.patch(api + 'comments/' + comment.id, req)
+						.then(function(response) {
+							return response;
+						})
+				}
+
+				this.deleteComment = function(id) {
+					return $http.delete(api + 'comments/' + id)
+						.then(function(response) {
+							return response;
+						})
+				}
+
+				// Helpers
+				var postReqHelper = function(post) {
+					var req = {
+						post: {
+							admin_id: post.admin_id,
+							nickname: post.nickname,
+							title: post.title,
+							body: post.body,
+							category: post.category
+						}
+					};
+
+					return req;
+				}
+
+				var commentReqHelper = function(comment) {
+					var req = {
+						comment:
+							{
+								post_id: comment.post_id,
+								commentable_id: comment.commentable_id,
+								commentable_type: comment.commentable_type,
+								nickname: comment.nickname,
+								body: comment.body,
+								post_title: comment.post_title
+							}
+					}
+
+					return req;
+				}
+
+			}])
 
   ;
 

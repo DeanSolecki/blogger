@@ -1,0 +1,21 @@
+---
+name: post
+url: /post
+controller: PostCtrl
+---
+
+<div class="grid-block">
+	<div class="grid-container">
+		<h3>{{ post.title }}</h3>
+		<h5>By: {{ post.nickname }} -- {{ post.created_at | date: 'MM/dd/yy h:mma' }}</h5>
+		<p>{{ post.body }}</p>
+		<ul ng-repeat="comment in post.comments">
+			<li>
+				{{ comment.body }}
+				<a href="#!/" ng-click="viewProfile(comment.nickname)">{{ comment.nickname }}</a> -- 
+				{{ comment.created_at | date: 'MM/dd/yy h:mma' }}
+			</li>
+		</ul>
+		<a href="#!/" ui-sref="home">Back to all posts</a>
+	</div><!-- .grid-container -->
+</div><!-- .grid-block -->
