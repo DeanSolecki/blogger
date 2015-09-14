@@ -7,10 +7,7 @@ class CommentsController < ApplicationController
 
   def index
 		if params[:nickname]
-			@comments = Array.new()
-			Comment.where(nickname: params[:nickname]).find_each do |comment|
-				@comments << comment
-			end
+			@comments = Comment.by_nickname(params[:nickname])
 		else
 			@comments = Comment.all
 		end
